@@ -47,7 +47,9 @@ class Controller
 				when EquipmentType::AC
 					equipment_consumption = EquipmentConsumption::AC
 				end
-				current_power_consumption = current_power_consumption + equipment_consumption
+				if equipment.current_state == State::ON
+					current_power_consumption = current_power_consumption + equipment_consumption
+				end
 			end
 	    end
 		current_power_consumption > floor.allowed_power_consumption
