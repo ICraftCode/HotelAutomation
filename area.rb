@@ -5,6 +5,7 @@ require './equipment'
 module Area
 	attr_accessor :equipments
 	attr_accessor :name
+	attr_accessor :area_type
 	#also has subareas - say a floor has main corridor and subcorridors. but skipping for now
 	def initialize_equipments (equipment_list)
 		#should we configure somewhere that mc has one light one ac.. how to easily add a tv
@@ -46,8 +47,9 @@ end
 
 class Main_Corridor
 	include Area
-	def initialize name
+	def initialize name, area_type
 		@name = name
+		@area_type = area_type
 		equipment_list = {}
 		equipment_list[EquipmentType::LIGHT] = [1, State::ON]
 		equipment_list[EquipmentType::AC] = [1, State::ON]
@@ -59,8 +61,9 @@ end
 
 class Sub_Corridor
 	include Area
-	def initialize name
+	def initialize name, area_type
 		@name = name
+		@area_type = area_type
 		equipment_list = {}
 		equipment_list[EquipmentType::LIGHT] = [1, State::OFF]
 		equipment_list[EquipmentType::AC] = [1, State::ON]

@@ -1,10 +1,12 @@
 require './area'
+require './area_type'
 
 class Building
 	class Floor
 		attr_accessor :areas
 		attr_accessor :number
-		attr_accessor :name
+		attr_accessor :allowed_power_consumption
+		# attr_accessor :name
 		# class Area
 		# 	def initialize
 		# 		puts "inside area constructor"
@@ -12,20 +14,39 @@ class Building
 		# end
 
 		def initialize number, num_of_mc_in_each_floor, num_of_sc_in_each_floor
+			#floor::area instead of independent area
+
+			
 			#this can be modularized
             @areas = Array.new
 
 			@number = number
-			@name = "Floor " + number.to_s
+			# @name = "Floor " + number.to_s
 			
 			(0...num_of_mc_in_each_floor).each do |mc|
-	    		main_corridor = Main_Corridor.new("Floor "+@number.to_s+" mc "+(mc+1).to_s)
+	    		main_corridor = Main_Corridor.new("Floor "+@number.to_s+" mc "+(mc+1).to_s, AreaType::MC)
 	    		@areas << main_corridor 
 			end
 			(0...num_of_sc_in_each_floor).each do |sc|
-				sub_corridor = Sub_Corridor.new("Floor "+@number.to_s+" sc "+(sc+1).to_s)
+				sub_corridor = Sub_Corridor.new("Floor "+@number.to_s+" sc "+(sc+1).to_s, AreaType::SC)
 	    		@areas << sub_corridor
 			end
+
+			@allowed_power_consumption = num_of_mc_in_each_floor * 15 + num_of_sc_in_each_floor * 10
 		end
+
+		# def power_limit_exceeded? 
+		# 	current_power_consumption = 0
+		# 	@areas.each do |area|
+		# 		case area.area_type
+		# 		when AreaType::MC
+		# 			current_power_consumption = current_power_consumption + 15
+		# 		when AreaType::SC
+		# 			current_power_consumption = current_power_consumption + 10
+		# 		end
+
+		# 	end
+		# 	current_power_consumption > @allowed_power_consumption
+		# end
 	end
 end
