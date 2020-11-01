@@ -36,25 +36,6 @@ class Controller
 	end
 
 
-	def power_limit_exceeded? floor #should this be going into floor
-		current_power_consumption = 0
-		floor.areas.each do |area|
-			area.equipments.each do |equipment|
-				equipment_consumption = 0
-				case equipment.type
-				when EquipmentType::LIGHT
-					equipment_consumption = EquipmentConsumption::LIGHT
-				when EquipmentType::AC
-					equipment_consumption = EquipmentConsumption::AC
-				end
-				if equipment.current_state == State::ON
-					current_power_consumption = current_power_consumption + equipment_consumption
-				end
-			end
-	    end
-		current_power_consumption > floor.allowed_power_consumption
-	end
-
 	def sub_corridor_control floor, subcorridor
 
         #actually check if this is subcorridor and do this; if main corridor may be u have to do somethingelse
@@ -72,7 +53,10 @@ class Controller
 	    end
 
 	    puts "Has power consumption exceeded for Floor #{floor.number}?"
-	    puts power_limit_exceeded? @building.floors.find{|f| f.number == floor.number}
+	    #puts power_limit_exceeded? @building.floors.find{|f| f.number == floor.number}
+	    
+	    f = @building.floors.find{|f| f.number == floor.number}
+	    puts f.power_limit_exceeded?  
 
 	end
 

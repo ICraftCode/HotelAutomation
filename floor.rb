@@ -35,18 +35,24 @@ class Building
 			@allowed_power_consumption = num_of_mc_in_each_floor * 15 + num_of_sc_in_each_floor * 10
 		end
 
-		# def power_limit_exceeded? 
-		# 	current_power_consumption = 0
-		# 	@areas.each do |area|
-		# 		case area.area_type
-		# 		when AreaType::MC
-		# 			current_power_consumption = current_power_consumption + 15
-		# 		when AreaType::SC
-		# 			current_power_consumption = current_power_consumption + 10
-		# 		end
 
-		# 	end
-		# 	current_power_consumption > @allowed_power_consumption
-		# end
+		def power_limit_exceeded?  #should this be going into floor
+			current_power_consumption = 0
+			self.areas.each do |area|
+				area.equipments.each do |equipment|
+					equipment_consumption = 0
+					case equipment.type
+					when EquipmentType::LIGHT
+						equipment_consumption = EquipmentConsumption::LIGHT
+					when EquipmentType::AC
+						equipment_consumption = EquipmentConsumption::AC
+					end
+					if equipment.current_state == State::ON
+						current_power_consumption = current_power_consumption + equipment_consumption
+					end
+				end
+		    end
+			current_power_consumption > self.allowed_power_consumption
+		end
 	end
 end
