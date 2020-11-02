@@ -2,6 +2,7 @@ require './state'
 require './sensor_input'
 require './equipment_consumption'
 require './equipment_type'
+require './area_type'
 
 class Controller
 	#@current_state
@@ -16,6 +17,7 @@ class Controller
 	# end
 
 	def current_state
+		puts "                       CURRENT STATE"
 		@building.floors.each do |floor|
 			floor.areas.each do |area|
 				area.stringify
@@ -35,6 +37,25 @@ class Controller
 		equipment.current_state = State::ON
 	end
 
+	def turn_sub_corridor_lights_off floor
+		subcorridors = floor.areas.select{|area| area.area_type == AreaType::SC}
+		subcorridors.sort_by! { |subcorridor| subcorridor.last_movement_time }
+		subcorridors.each do |subcorridor|
+			enough_acs_turned_off = false
+			subcorridor_acs = subcorridor.equipments.select{|equipment| equipment.type == EquipmentType::AC}
+			subcorridor_acs.each do |ac|
+				if floor.power_limit_exceeded?
+					switch_off ac
+				else
+                    enough_acs_turned_off = true
+					break
+				end
+			end
+			break if enough_acs_turned_off
+		end
+		current_state
+	end
+
 
 	def sub_corridor_control floor, subcorridor
 
@@ -52,24 +73,26 @@ class Controller
 	    	#should also immediately update current state
 	    end
 
-	    puts "Has power consumption exceeded for Floor #{floor.number}?"
-	    #puts power_limit_exceeded? @building.floors.find{|f| f.number == floor.number}
-	    
 	    f = @building.floors.find{|f| f.number == floor.number}
-	    puts f.power_limit_exceeded?  
+
+	    if f.power_limit_exceeded? 
+	    	puts "Power consumption has exceeded for Floor #{floor.number}"
+	        turn_sub_corridor_lights_off floor
+	    end
 
 	end
 
 	# def main_corridor_control
 	# end
 
-	def process_sensor_input sensor_input
+	def process_sensor_input sensor_input_area, sensor_input_time
 
-		puts sensor_input
+		#puts sensor_input
 		#assuming input is strictly of the format 'floor 1 mc 1'
-		floor_number = sensor_input.split(' ')[1]
+		floor_number = sensor_input_area.split(' ')[1]
         floor = @building.floors.find{|f| f.number.to_s == floor_number}
-        area = floor.areas.find{|a| a.name == sensor_input}
+        area = floor.areas.find{|a| a.name == sensor_input_area}
+        area.last_movement_time = sensor_input_time
         sub_corridor_control floor, area
 	end
 end

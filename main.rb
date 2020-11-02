@@ -49,7 +49,7 @@ controller = Controller.new(building)
 
 #controller.current_state
 
-controller.process_sensor_input "Floor 1 sc 2"
+controller.process_sensor_input "Floor 1 sc 1", 1
 
 
 

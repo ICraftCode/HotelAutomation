@@ -6,8 +6,10 @@ module Area
 	attr_accessor :equipments
 	attr_accessor :name
 	attr_accessor :area_type
+	attr_accessor :last_movement_time
 	#also has subareas - say a floor has main corridor and subcorridors. but skipping for now
 	def initialize_equipments (equipment_list)
+		@last_movement_time = 0
 		#should we configure somewhere that mc has one light one ac.. how to easily add a tv
 		@equipments = Array.new
 		equipment_list.each do | equipment_type, equipment_detail |
@@ -28,13 +30,17 @@ module Area
 		end
 	end
 
+	def motion_detected movement_time
+		@last_movement_time = movement_time
+	end
+
 
 	def stringify
 		@equipments.each do |equipment|
-			puts "#{equipment.name} which has a default state of #{equipment.current_state}"
+			puts "#{equipment.name} : #{equipment.current_state}"
 		end
 
-		puts "*******************************************************************************"
+		puts "********************************"
 
 	end
 
